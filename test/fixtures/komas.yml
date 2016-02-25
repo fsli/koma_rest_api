@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  owner_id: 1
+  koma_date: 2016-02-24 14:56:42
+  koma_type: 1
+  prospect_name: MyString
+  memo: MyText
+
+two:
+  owner_id: 1
+  koma_date: 2016-02-24 14:56:42
+  koma_type: 1
+  prospect_name: MyString
+  memo: MyText
