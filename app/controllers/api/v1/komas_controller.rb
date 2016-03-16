@@ -2,7 +2,38 @@ class Api::V1::KomasController < ApplicationController
   skip_before_filter  :verify_authenticity_token
       def index
         koma_id = params[:id]
-        data = Koma.all.select(:id, :owner_id, :koma_date, :koma_type, :prospect_name, :memo, :created_at, :updated_at).order("created_at DESC")
+        owner_id = params[:owner_id]
+        before = params[:before]
+        after = params[:after]
+        use_conditions = false
+        condition_params = {}
+        conditions = ""
+        if owner_id != nil && owner_id != ''
+          conditions += " owner_id = :owner_id "
+          condition_params[:owner_id] = owner_id
+          use_conditions = true
+        end
+        if before != nil && before != ''
+          if use_conditions
+            conditions += " AND "
+          end
+          conditions += "koma_date < :before"
+          condition_params[:before] = DateTime.strptime(before, "%m/%d/%Y %H:%M")
+          use_conditions = true
+        end
+        if after != nil && after != ''
+          if use_conditions
+            conditions += " AND "
+          end
+          conditions += " koma_date > :after "
+          condition_params[:after] = DateTime.strptime(after, "%m/%d/%Y %H:%M")
+          use_conditions = true
+        end
+        if !use_conditions
+          data = Koma.all.select(:id, :owner_id, :koma_date, :koma_type, :prospect_name, :memo, :created_at, :updated_at).order("created_at DESC")
+        else
+          data = Koma.all.select(:id, :owner_id, :koma_date, :koma_type, :prospect_name, :memo, :created_at, :updated_at).where(conditions, condition_params).order("created_at DESC")
+        end
         results = Array.new()
         data.each do |row|
           results.push({id: row['id'], owner_id: row['owner_id'], koma_date: row['koma_date'], koma_type: row['koma_type'], prospect_name: row['prospect_name'], memo: row['memo'], created_at: row['created_at'], updated_at: row['updated_at']})
