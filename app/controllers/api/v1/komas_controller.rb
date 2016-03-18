@@ -17,7 +17,7 @@ class Api::V1::KomasController < ApplicationController
           if use_conditions
             conditions += " AND "
           end
-          conditions += "koma_date < :before"
+          conditions += "created_at < :before"
           condition_params[:before] = DateTime.strptime(before, "%m/%d/%Y %H:%M")
           use_conditions = true
         end
@@ -25,7 +25,7 @@ class Api::V1::KomasController < ApplicationController
           if use_conditions
             conditions += " AND "
           end
-          conditions += " koma_date > :after "
+          conditions += " created_at > :after "
           condition_params[:after] = DateTime.strptime(after, "%m/%d/%Y %H:%M")
           use_conditions = true
         end
