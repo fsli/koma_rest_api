@@ -3,8 +3,10 @@ class Api::V1::KomasController < ApplicationController
       def index
         koma_id = params[:id]
         owner_id = params[:owner_id]
-        before = params[:before]
-        after = params[:after]
+        created_before = params[:created_before]
+        created_after = params[:created_after]
+        koma_date_before = params[:koma_date_before]
+        koma_date_after = params[:koma_date_after]
         use_conditions = false
         condition_params = {}
         conditions = ""
@@ -13,20 +15,36 @@ class Api::V1::KomasController < ApplicationController
           condition_params[:owner_id] = owner_id
           use_conditions = true
         end
-        if before != nil && before != ''
+        if created_before != nil && created_before != ''
           if use_conditions
             conditions += " AND "
           end
-          conditions += "created_at < :before"
-          condition_params[:before] = DateTime.strptime(before, "%m/%d/%Y %H:%M")
+          conditions += "created_at < :created_before"
+          condition_params[:created_before] = DateTime.strptime(created_before, "%m/%d/%Y %H:%M")
           use_conditions = true
         end
-        if after != nil && after != ''
+        if created_after != nil && created_after != ''
           if use_conditions
             conditions += " AND "
           end
-          conditions += " created_at > :after "
-          condition_params[:after] = DateTime.strptime(after, "%m/%d/%Y %H:%M")
+          conditions += " created_at > :created_after "
+          condition_params[:created_after] = DateTime.strptime(created_after, "%m/%d/%Y %H:%M")
+          use_conditions = true
+        end
+        if koma_date_before != nil && koma_date_before != ''
+          if use_conditions
+            conditions += " AND "
+          end
+          conditions += "koma_date < :koma_date_before"
+          condition_params[:koma_date_before] = DateTime.strptime(koma_date_before, "%m/%d/%Y %H:%M")
+          use_conditions = true
+        end
+        if koma_date_after != nil && koma_date_after != ''
+          if use_conditions
+            conditions += " AND "
+          end
+          conditions += " koma_date > :koma_date_after "
+          condition_params[:koma_date_after] = DateTime.strptime(koma_date_after, "%m/%d/%Y %H:%M")
           use_conditions = true
         end
         if !use_conditions
