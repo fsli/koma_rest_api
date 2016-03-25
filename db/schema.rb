@@ -11,10 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160318211630) do
+ActiveRecord::Schema.define(version: 20160325181408) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "koma_messages", force: :cascade do |t|
+    t.integer  "user_id",                null: false
+    t.integer  "company_id",             null: false
+    t.text     "content"
+    t.text     "url"
+    t.integer  "oko",        default: 0, null: false
+    t.integer  "attr",       default: 0, null: false
+    t.integer  "read_by",    default: 0, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "koma_users", force: :cascade do |t|
     t.string   "username"

@@ -21,5 +21,6 @@ def seed_koma
   Koma.create(owner_id: 2, koma_date: DateTime.strptime("03/02/2016 9:00", "%m/%d/%Y %H:%M"), koma_type: 2, prospect_name: "prospect_name2", memo: "some memo text2")
   Koma.create(owner_id: 3, koma_date: DateTime.strptime("03/03/2016 9:00", "%m/%d/%Y %H:%M"), koma_type: 3, prospect_name: "prospect_name3", memo: "some memo text3")
 end
+
 seed_koma_user()
 seed_koma()
