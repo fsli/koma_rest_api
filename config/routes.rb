@@ -4,6 +4,8 @@ Rails.application.routes.draw do
       resources :komas
       resources :koma_users
       resources :koma_messages
+      resources :devices
+      resources :notifications
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.

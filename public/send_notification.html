@@ -1,0 +1,33 @@
+<html>
+	<head/>
+		<script type="text/javascript" src="js/jquery-1.12.2.min.js"></script>
+		<script type="text/javascript" >
+			$(function() {
+				
+				$('#btnSend').click(function () {
+					var userId = $('#txtUserId').val();
+					var message = $('#txtMessage').val();
+					var badge = $('#txtBadge').val();
+
+					$.ajax({
+					    url: '/api/v1/notifications',
+					    type: 'POST',
+					    data: {user_id: userId, message: message, badge: badge} ,
+					    success: function(response) {
+					        alert(response.message);
+					    }
+					});
+					
+				});
+			});	
+		</script>
+	</head>
+	
+	<body>
+		User ID: <input type='text' id='txtUserId' value=''> <br>
+		Message: <input type='text' id='txtMessage' value='' size='50'> <br>
+		Badge: <input type='text' id='txtBadge' value='' ><br>
+		<br>
+		<button id="btnSend">Send</button>
+	</body>
+</html>
