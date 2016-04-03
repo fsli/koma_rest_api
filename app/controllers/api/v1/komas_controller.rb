@@ -43,7 +43,7 @@ class Api::V1::KomasController < ApplicationController
           if use_conditions
             conditions += " AND "
           end
-          conditions += " koma_date > :koma_date_after "
+          conditions += " koma_date >= :koma_date_after "
           condition_params[:koma_date_after] = DateTime.strptime(koma_date_after, "%m/%d/%Y %H:%M")
           use_conditions = true
         end
