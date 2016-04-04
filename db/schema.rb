@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160403224028) do
+ActiveRecord::Schema.define(version: 20160404043518) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,12 +39,13 @@ ActiveRecord::Schema.define(version: 20160403224028) do
   create_table "koma_users", force: :cascade do |t|
     t.string   "username"
     t.integer  "attr"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
     t.integer  "company_id"
     t.string   "nickname"
     t.string   "picture_url"
     t.string   "facebook_id"
+    t.integer  "badge_number", default: 0, null: false
   end
 
   create_table "komas", force: :cascade do |t|

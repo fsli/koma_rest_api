@@ -1,6 +1,7 @@
 require 'houston'
 
 class Api::V1::NotificationsController < ApplicationController
+  include NotificationsHelper
   APN = Houston::Client.production
   APN.certificate = File.read("./development_moteve_apns_sample.pem")
   skip_before_filter  :verify_authenticity_token
@@ -19,7 +20,7 @@ class Api::V1::NotificationsController < ApplicationController
     param_badge = params[:badge]
     ret = validate_notification_create
     if ret[:result]
-      ret = create_notification(param_user_id, param_message, param_badge)
+      ret = NotificationsHelper.create_notification(param_user_id, param_message, param_badge)
       render json: ret
     else
       render json: ret
@@ -29,8 +30,8 @@ class Api::V1::NotificationsController < ApplicationController
   def update
     param_is_pushed = params[:is_pushed]
     if param_is_pushed == 'true'
-      send_all_notifications
-      Notification.update_all(:is_pushed => true)
+      NotificationsHelper.send_all_notifications
+      
     elsif
       Notification.update_all(:is_pushed => false)
     end
@@ -42,16 +43,7 @@ class Api::V1::NotificationsController < ApplicationController
     end
   end
 
-  private def send_all_notifications
-    data = Notification.joins('INNER JOIN devices ON notifications.user_id = devices.user_id').select("notifications.user_id as user_id, notifications.message as message, notifications.badge as badge, devices.device_token AS device_token").where(:is_pushed => false).order("notifications.created_at ASC")
-    for row in data
-      token = row['device_token']
-      notification = Houston::Notification.new(device: token)
-      notification.alert = row['message']
-      notification.badge = row['badge']
-      APN.push(notification)
-    end
-  end
+  
   
   private def validate_notification_create
     param_user_id = params[:user_id]
@@ -69,9 +61,5 @@ class Api::V1::NotificationsController < ApplicationController
     return {result: true}
   end
 
-  private def create_notification(user_id, message, badge)
-    data = Notification.create(user_id: user_id, message: message, badge: badge)
-    ret =  {result: true, id: data['id'], user_id: data['user_id'],  badge: data['badge'], message: "Notification has been created." }
-    return ret
-  end
+  
 end
