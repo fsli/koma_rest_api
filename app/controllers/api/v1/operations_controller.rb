@@ -1,8 +1,7 @@
-require 'houston'
+
 class Api::V1::OperationsController < ApplicationController
   include NotificationsHelper
-  APN = Houston::Client.production
-  APN.certificate = File.read("./development_moteve_apns_sample.pem")
+  
   skip_before_filter  :verify_authenticity_token
   def index
     render :nothing => true, :status => :method_not_allowed
