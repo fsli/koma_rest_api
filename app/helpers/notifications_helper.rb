@@ -1,7 +1,7 @@
 require 'houston'
 module NotificationsHelper
   APN = Houston::Client.production
-  APN.certificate = File.read("./development_moteve_apns_sample.pem")
+  APN.certificate = File.read(Rails.configuration.x.apn.pem_file_path)
   def self.create_notification(user_id, message, badge)
     data = Notification.create(user_id: user_id, message: message, badge: badge)
     ret =  {result: true, id: data['id'], user_id: data['user_id'],  badge: data['badge'], message: "Notification has been created." }

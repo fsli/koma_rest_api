@@ -4,5 +4,5 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :null_session
   APN = Houston::Client.production
-  APN.certificate = File.read("./development_moteve_apns_sample.pem")
+  APN.certificate = File.read(Rails.configuration.x.apn.pem_file_path)
 end
