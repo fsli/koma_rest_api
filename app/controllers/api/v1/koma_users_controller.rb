@@ -99,7 +99,7 @@ class Api::V1::KomaUsersController < ApplicationController
           user.update(badge_number: badge_number)
         end
       else
-        user.update(username: username, attr: attribute, company_id: company_id, nickname: nickname, picture_url: picture_url, facebook_id: facebook_id, badge_number: badge_number)
+        user.update(username: username, attr: attribute, company_id: company_id, nickname: nickname, picture_url: picture_url, facebook_id: facebook_id, badge_number: badge_number.nil? ? 0 : badge_number)
       end
       
       ret =  {result: true, id: user['id'], username: user['username'],  attr: user['attr'], company_id: user['company_id'], nickname: user['nickname'], picture_url: user['picture_url'], facebook_id:user['facebook_id'], badge_number: user['badge_number'], message: "User has been updated successfully." }
