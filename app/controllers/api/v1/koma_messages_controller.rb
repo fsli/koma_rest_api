@@ -27,26 +27,29 @@ class Api::V1::KomaMessagesController < ApplicationController
     if limit <= 0
       limit = 65535
     end
-
+    selected_columns = "koma_messages.id, user_id, koma_users.username as username, koma_users.company_id as company_id, content, url, oko, koma_messages.attr as attr, read_by, sender_user_id, B.username as sender_username, koma_messages.created_at as created_at, koma_messages.updated_at as updated_at"
+    joined_tables = 'LEFT OUTER JOIN koma_users ON koma_messages.user_id = koma_users.id LEFT OUTER JOIN koma_users B on koma_messages.sender_user_id = B.id'
     if !use_conditions
-      data = KomaMessage.joins('INNER JOIN koma_users ON koma_messages.user_id = koma_users.id').select(:id, :user_id, :username, :company_id, :content, :url, :oko, :attr, :read_by, :sender_user_id, :created_at, :updated_at).limit(limit).offset(offset).order("created_at DESC")
+      data = KomaMessage.joins(joined_tables).select(selected_columns).limit(limit).offset(offset).order("created_at DESC")
     else
-      data = KomaMessage.joins('INNER JOIN koma_users ON koma_messages.user_id = koma_users.id').select(:id, :user_id, :username, :company_id, :content, :url, :oko, :attr, :read_by, :sender_user_id, :created_at, :updated_at).where(conditions, condition_params).limit(limit).offset(offset).order("created_at DESC")
+      data = KomaMessage.joins(joined_tables).select(selected_columns).where(conditions, condition_params).limit(limit).offset(offset).order("created_at DESC")
     end
     results = Array.new()
     data.each do |row|
-      results.push({id: row['id'], user_id: row['user_id'], username: row['username'], company_id: row['company_id'], content: row['content'], url: row['url'], oko: row['oko'], attr: row['attr'], read_by: row['read_by'], sender_user_id: row['sender_user_id'], created_at: row['created_at'], updated_at: row['updated_at']})
+      results.push({id: row['id'], user_id: row['user_id'], username: row['username'], company_id: row['company_id'], content: row['content'], url: row['url'], oko: row['oko'], attr: row['attr'], read_by: row['read_by'], sender_user_id: row['sender_user_id'], sender_username: row['sender_username'], created_at: row['created_at'], updated_at: row['updated_at']})
     end
     render json: results
   end
 
   def show
     koma_message_id = params[:id].to_i()
-    row = KomaMessage.joins('INNER JOIN koma_users ON koma_messages.user_id = koma_users.id').select(:id, :user_id, :username, :company_id, :content, :url, :oko, :attr, :read_by, :sender_user_id, :created_at, :updated_at).find(koma_message_id)
+    selected_columns = "koma_messages.id, user_id, koma_users.username as username, koma_users.company_id as company_id, content, url, oko, koma_messages.attr as attr, read_by, sender_user_id, B.username as sender_username, koma_messages.created_at as created_at, koma_messages.updated_at as updated_at"
+    joined_tables = 'LEFT OUTER JOIN koma_users ON koma_messages.user_id = koma_users.id LEFT OUTER JOIN koma_users B on koma_messages.sender_user_id = B.id'
+    row = KomaMessage.joins(joined_tables).select(selected_columns).find(koma_message_id)
     if row == nil
       result = {result: false, message: "Cannot find Koma Message by id: #{koma_message_id}" }
     else
-      result = {result: true, id: row['id'], user_id: row['user_id'], username: row['username'], company_id: row['company_id'], content: row['content'], url: row['url'], oko: row['oko'], attr: row['attr'], read_by: row['read_by'], sender_user_id: row['sender_user_id'], created_at: row['created_at'], updated_at: row['updated_at']}
+      result = {result: true, id: row['id'], user_id: row['user_id'], username: row['username'], company_id: row['company_id'], content: row['content'], url: row['url'], oko: row['oko'], attr: row['attr'], read_by: row['read_by'], sender_user_id: row['sender_user_id'], sender_username: row['sender_username'], created_at: row['created_at'], updated_at: row['updated_at']}
     end
     render json: result
   end
