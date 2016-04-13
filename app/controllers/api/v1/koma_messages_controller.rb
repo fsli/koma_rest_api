@@ -5,6 +5,8 @@ class Api::V1::KomaMessagesController < ApplicationController
     company_id = params[:company_id]
     range_start = params[:range_start]
     range_end = params[:range_end]
+    created_before = params[:created_before]
+    created_after = params[:created_after]
     use_conditions = false
     condition_params = {}
     conditions = ""
@@ -26,6 +28,22 @@ class Api::V1::KomaMessagesController < ApplicationController
     limit = range_end.to_i() - range_start.to_i()
     if limit <= 0
       limit = 65535
+    end
+    if created_before != nil && created_before != ''
+      if use_conditions
+        conditions += " AND "
+      end
+      conditions += "koma_messages.created_at < :created_before"
+      condition_params[:created_before] = DateTime.strptime(created_before, "%m/%d/%Y %H:%M")
+      use_conditions = true
+    end
+    if created_after != nil && created_after != ''
+      if use_conditions
+        conditions += " AND "
+      end
+      conditions += " koma_messages.created_at >= :created_after "
+      condition_params[:created_after] = DateTime.strptime(created_after, "%m/%d/%Y %H:%M")
+      use_conditions = true
     end
     selected_columns = "koma_messages.id, user_id, koma_users.username as username, koma_users.company_id as company_id, content, url, oko, koma_messages.attr as attr, read_by, sender_user_id, B.username as sender_username, koma_messages.created_at as created_at, koma_messages.updated_at as updated_at"
     joined_tables = 'LEFT OUTER JOIN koma_users ON koma_messages.user_id = koma_users.id LEFT OUTER JOIN koma_users B on koma_messages.sender_user_id = B.id'
