@@ -38,5 +38,6 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
-  config.x.apn.pem_file_path = "./development_moteve_apns_sample.pem"
+  config.x.apn.pem_file_path = "./kyotosalestracker_dev.pem"
+  config.x.apn.mode = "development"
 end

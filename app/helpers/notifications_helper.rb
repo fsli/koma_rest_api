@@ -1,6 +1,10 @@
 require 'houston'
 module NotificationsHelper
-  APN = Houston::Client.production
+  if Rails.configuration.x.apn.mode == "development"
+    APN = Houston::Client.development
+  else
+    APN = Houston::Client.production
+  end
   APN.certificate = File.read(Rails.configuration.x.apn.pem_file_path)
   def self.create_notification(user_id, message, badge)
     data = Notification.create(user_id: user_id, message: message, badge: badge)
