@@ -1,0 +1,144 @@
+<html>
+	<head/>
+		<script type="text/javascript" src="js/jquery-1.12.2.min.js"></script>
+		<script type="text/javascript" >
+			$(function() {
+				loadKomaLabels();
+				
+			});	
+			function loadKomaLabels() {
+				$('.data-row').remove();
+				$.ajax({
+				    url: '/api/v1/koma_labels',
+				    type: 'GET',
+				    success: function(response) {
+				        if (response && response.length > 0) {
+				        	var html ="";
+				        	for (var i = 0 ; i < response.length ; i++) {
+				        		var row = response[i];
+				        		var id = row.id;
+				        		var companyId = row.company_id;
+				        		var labelOrder = row.label_order;
+				        		var labelText = row.label_text;
+				        		html += "<tr class='data-row'>";
+				        		html += "<td>" + row.id + "</td>";
+				        		html += "<td><input type='text' id='txtCompanyId" + id +"' value='" + companyId + "'></td>"
+				        		html += "<td><input type='text' id='txtLabelOrder" + id +"' value='" + labelOrder + "'></td>"
+				        		html += "<td><input type='text' id='txtLabelText" + id +"' value='" + labelText + "'></td>"
+				        		html += "<td>" + row.created_at + "</td>"
+				        		html += "<td>" + row.updated_at + "</td>"
+				        		html += "<td><input type='button' value='Save' onclick='saveKomaLabel(" + row.id + ");'><input type='button' value='Delete' onclick='deleteKomaLabel(" + row.id + ");'></td>"; 
+				        		html += "</tr>";
+				        		
+				        	}
+				        	$(html).insertAfter('.new-koma-label-row');
+				        }
+				    }
+				});
+			}
+			function addNewKomaLabel() {
+				var companyId = $('#txtCompanyId').val();
+				var labelOrder = $('#txtLabelOrder').val();
+				var labelText = $('#txtLabelText').val();
+				$.ajax({
+				    url: '/api/v1/koma_labels',
+				    type: 'POST',
+				    data: {company_id: companyId
+				    		, label_order: labelOrder
+				    		, label_text: labelText
+				    		} ,
+				    success: function(response) {
+				    	if (response && response.result == true) {
+				    		alert(response.message);
+				    		loadKomaLabels();
+				    		clearNewKomaLabel();
+				    	} else {
+				    		alert(response.message);
+				    	}
+				    	
+				    	
+				        
+				    }
+				});
+			}
+			
+			function saveKomaLabel(id) {
+				var companyId = $('#txtCompanyId'+id).val();
+				var labelOrder = $('#txtLabelOrder'+id).val();
+				var labelText = $('#txtLabelText'+id).val();
+				$.ajax({
+				    url: '/api/v1/koma_labels/' + id,
+				    type: 'PUT',
+				    data: {company_id: companyId
+				    		, label_order: labelOrder
+				    		, label_text: labelText
+				    		} ,
+				    success: function(response) {
+				    	if (response && response.result == true) {
+				    		alert(response.message);
+				    		loadKomaLabels();
+				    	} else {
+				    		alert(response.message);
+				    	}
+				    	
+				    	
+				        
+				    }
+				});
+				
+			}
+			
+			function deleteKomaLabel(id) {
+				if (confirm('Do you want to delete Koma Label id: ' + id + '?')) {
+					$.ajax({
+					    url: '/api/v1/koma_labels/' + id,
+					    type: 'DELETE',
+					    
+					    success: function(response) {
+					    	if (response && response.result == true) {
+					    		alert(response.message);
+					    		loadKomaLabels();
+					    	} else {
+					    		alert(response.message);
+					    	}
+					    	
+					    	
+					        
+					    }
+					});
+				} 
+			}
+			
+			function clearNewKomaLabel() {
+				$('#txtCompanyId').val("");
+				$('#txtLabelOrder').val("");
+				$('#txtLabelText').val("");
+			}
+		</script>
+	</head>
+	
+	<body>
+		<h3>Koma Labels Management</h3>
+		<table border='1' cellspacing='0' cellpadding='3'>
+			<tr class='koma-labels-header'>
+				<th>id</th>
+				<th>company_id</th>
+				<th>label_order</th>
+				<th>label_text</th>
+				<th>created_at</th>
+				<th>updated_at</th>
+				<th></th>
+			</tr>
+			<tr class="new-koma-label-row">
+				<td>N/A</td>
+				<td><input id="txtCompanyId" type="text"></td>
+				<td><input id="txtLabelOrder" type="text"></td>
+				<td><input id="txtLabelText" type="text"></td>
+				<td>N/A</td>
+				<td>N/A</td>
+				<td>&nbsp;<input type="button" id='btnAdd' style='width:150px' value="Add New Koma Label" onclick='addNewKomaLabel()'>&nbsp;</td>
+			</tr>
+		</table>
+		
+	</body>
+</html>

@@ -1,0 +1,162 @@
+<html>
+	<head/>
+		<script type="text/javascript" src="js/jquery-1.12.2.min.js"></script>
+		<script type="text/javascript" >
+			$(function() {
+				loadCompanies();
+				
+			});	
+			function loadCompanies() {
+				$('.data-row').remove();
+				$.ajax({
+				    url: '/api/v1/companies',
+				    type: 'GET',
+				    success: function(response) {
+				        if (response && response.length > 0) {
+				        	var html ="";
+				        	for (var i = 0 ; i < response.length ; i++) {
+				        		var row = response[i];
+				        		var id = row.id;
+				        		var companyName = row.company_name;
+				        		var accountStatus = row.account_status;
+				        		var adminEmail = row.admin_email;
+				        		var adminPass = row.admin_pass;
+				        		var companyUrl = row.company_url;
+				        		html += "<tr class='data-row'>";
+				        		html += "<td>" + row.id + "</td>";
+				        		html += "<td><input type='text' id='txtCompanyName" + id +"' value='" + companyName + "'></td>"
+				        		html += "<td><input type='text' id='txtAccountStatus" + id +"' value='" + accountStatus + "'></td>"
+				        		html += "<td><input type='text' id='txtAdminEmail" + id +"' value='" + adminEmail + "'></td>"
+				        		html += "<td><input type='text' id='txtAdminPass" + id +"' value='" + adminPass + "'></td>"
+				        		html += "<td><input type='text' id='txtCompanyUrl" + id +"' value='" + companyUrl + "'></td>"
+				        		html += "<td>" + row.created_at + "</td>"
+				        		html += "<td>" + row.updated_at + "</td>"
+				        		html += "<td><input type='button' value='Save' onclick='saveCompany(" + row.id + ");'><input type='button' value='Delete' onclick='deleteCompany(" + row.id + ");'></td>"; 
+				        		html += "</tr>";
+				        		
+				        	}
+				        	$(html).insertAfter('.new-company-row');
+				        }
+				    }
+				});
+			}
+			function addNewCompany() {
+				var companyName = $('#txtCompanyName').val();
+				var accountStatus = $('#txtAccountStatus').val();
+				var adminEmail = $('#txtAdminEmail').val();
+				var adminPass = $('#txtAdminPass').val();
+				var companyUrl = $('#txtCompanyUrl').val();
+				$.ajax({
+				    url: '/api/v1/companies',
+				    type: 'POST',
+				    data: {company_name: companyName
+				    		, account_status: accountStatus
+				    		, admin_email: adminEmail
+				    		, admin_pass : adminPass
+				    		, company_url : companyUrl
+				    		} ,
+				    success: function(response) {
+				    	if (response && response.result == true) {
+				    		alert(response.message);
+				    		loadCompanies();
+				    		clearNewCompany();
+				    	} else {
+				    		alert(response.message);
+				    	}
+				    	
+				    	
+				        
+				    }
+				});
+			}
+			
+			function saveCompany(id) {
+				var companyName = $('#txtCompanyName'+id).val();
+				var accountStatus = $('#txtAccountStatus' + id).val();
+				var adminEmail = $('#txtAdminEmail' + id).val();
+				var adminPass = $('#txtAdminPass' + id).val();
+				var companyUrl = $('#txtCompanyUrl' + id).val();
+				$.ajax({
+				    url: '/api/v1/companies/' + id,
+				    type: 'PUT',
+				    data: {company_name: companyName
+				    		, account_status: accountStatus
+				    		, admin_email: adminEmail
+				    		, admin_pass : adminPass
+				    		, company_url : companyUrl
+				    		} ,
+				    success: function(response) {
+				    	if (response && response.result == true) {
+				    		alert(response.message);
+				    		loadCompanies();
+				    	} else {
+				    		alert(response.message);
+				    	}
+				    	
+				    	
+				        
+				    }
+				});
+				
+			}
+			
+			function deleteCompany(id) {
+				if (confirm('Do you want to delete company id: ' + id + '?')) {
+					$.ajax({
+					    url: '/api/v1/companies/' + id,
+					    type: 'DELETE',
+					    
+					    success: function(response) {
+					    	if (response && response.result == true) {
+					    		alert(response.message);
+					    		loadCompanies();
+					    	} else {
+					    		alert(response.message);
+					    	}
+					    	
+					    	
+					        
+					    }
+					});
+				} 
+			}
+			
+			function clearNewCompany() {
+				$('#txtCompanyName').val("");
+				$('#txtAccountStatus').val("");
+				$('#txtAdminEmail').val("");
+				$('#txtAdminPass').val("");
+				$('#txtCompanyUrl').val("");
+			}
+		</script>
+	</head>
+	
+	<body>
+		<h3>Companies Management</h3>
+		<table border='1' cellspacing='0' cellpadding='3'>
+			<tr class='companies-header'>
+				<th>id</th>
+				<th>company_name</th>
+				<th>account_status</th>
+				<th>admin_email</th>
+				<th>admin_pass</th>
+				<th>company_url</th>
+				<th>created_at</th>
+				<th>updated_at</th>
+				<th></th>
+			</tr>
+			<tr class="new-company-row">
+				<td>N/A</td>
+				<td><input id="txtCompanyName" type="text"></td>
+				<td><input id="txtAccountStatus" type="text"></td>
+				<td><input id="txtAdminEmail" type="text"></td>
+				<td><input id="txtAdminPass" type="text"></td>
+				<td><input id="txtCompanyUrl" type="text"></td>
+				<td>N/A</td>
+				<td>N/A</td>
+				<td>&nbsp;<input type="button" id='btnAdd' style='width:150px' value="Add New Company" onclick='addNewCompany()'>&nbsp;</td>
+			</tr>
+		</table>
+		
+	</body>
+</html>

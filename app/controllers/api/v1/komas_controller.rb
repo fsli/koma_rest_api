@@ -132,7 +132,7 @@ class Api::V1::KomasController < ApplicationController
         end 
         data.destroy()
   
-        render json: {restul: true, id: data['id'], message: "Koma has been deleted." }    
+        render json: {result: true, id: data['id'], message: "Koma has been deleted." }    
       end
     
       private def validate_koma_create(owner_id, koma_date, koma_type, prospect_name, memo)

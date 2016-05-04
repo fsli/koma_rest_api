@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160405043823) do
+ActiveRecord::Schema.define(version: 20160504065016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "companies", force: :cascade do |t|
+    t.string   "company_name",               null: false
+    t.integer  "account_status", default: 0, null: false
+    t.string   "admin_email"
+    t.string   "admin_pass"
+    t.string   "company_url"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
 
   create_table "devices", force: :cascade do |t|
     t.string   "device_token", null: false
@@ -24,6 +34,16 @@ ActiveRecord::Schema.define(version: 20160405043823) do
   end
 
   add_index "devices", ["device_token"], name: "index_devices_on_device_token", unique: true, using: :btree
+
+  create_table "koma_labels", force: :cascade do |t|
+    t.integer  "company_id",  null: false
+    t.integer  "label_order", null: false
+    t.string   "label_text"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "koma_labels", ["company_id", "label_order"], name: "index_koma_labels_on_company_id_and_label_order", unique: true, using: :btree
 
   create_table "koma_messages", force: :cascade do |t|
     t.integer  "user_id",                    null: false

@@ -115,7 +115,7 @@ class Api::V1::KomaUsersController < ApplicationController
       end 
       user.destroy()
 
-      render json: {restul: true, id: user['id'], message: "User has been deleted successfully." }    
+      render json: {result: true, id: user['id'], message: "User has been deleted successfully." }    
     end
   
     private def validate_koma_user_create

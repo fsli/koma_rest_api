@@ -7,6 +7,8 @@ Rails.application.routes.draw do
       resources :devices
       resources :notifications
       resources :operations
+      resources :koma_labels
+      resources :companies
     end
   end
   # The priority is based upon order of creation: first created -> highest priority.
