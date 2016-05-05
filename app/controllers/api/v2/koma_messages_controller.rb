@@ -58,7 +58,7 @@ class Api::V2::KomaMessagesController < ApplicationController
     data.each do |row|
       results.push({id: row['id'], user_id: row['user_id'], username: row['username'], company_id: row['company_id'], content: row['content'], url: row['url'], oko: row['oko'], attr: row['attr'], read_by: row['read_by'], sender_user_id: row['sender_user_id'], sender_username: row['sender_username'], created_at: row['created_at'], updated_at: row['updated_at']})
     end
-    render json: {total_count: total_count, results: results}
+    render json: results
   end
 
   def show
