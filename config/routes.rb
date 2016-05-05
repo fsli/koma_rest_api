@@ -10,6 +10,16 @@ Rails.application.routes.draw do
       resources :koma_labels
       resources :companies
     end
+    namespace :v2 do
+      resources :komas
+      resources :koma_users
+      resources :koma_messages
+      resources :devices
+      resources :notifications
+      resources :operations
+      resources :koma_labels
+      resources :companies
+    end
   end
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

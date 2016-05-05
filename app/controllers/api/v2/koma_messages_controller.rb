@@ -1,4 +1,4 @@
-class Api::V1::KomaMessagesController < ApplicationController
+class Api::V2::KomaMessagesController < ApplicationController
   skip_before_filter  :verify_authenticity_token
   def index
     user_id = params[:user_id]
@@ -48,15 +48,17 @@ class Api::V1::KomaMessagesController < ApplicationController
     selected_columns = "koma_messages.id, user_id, koma_users.username as username, koma_messages.company_id as company_id, content, url, oko, koma_messages.attr as attr, read_by, sender_user_id, B.username as sender_username, koma_messages.created_at as created_at, koma_messages.updated_at as updated_at"
     joined_tables = 'LEFT OUTER JOIN koma_users ON koma_messages.user_id = koma_users.id LEFT OUTER JOIN koma_users B on koma_messages.sender_user_id = B.id'
     if !use_conditions
+      total_count = KomaMessage.joins(joined_tables).select("*").count
       data = KomaMessage.joins(joined_tables).select(selected_columns).limit(limit).offset(offset).order("created_at DESC")
     else
+      total_count = KomaMessage.joins(joined_tables).select("*").where(conditions, condition_params).count
       data = KomaMessage.joins(joined_tables).select(selected_columns).where(conditions, condition_params).limit(limit).offset(offset).order("created_at DESC")
     end
     results = Array.new()
     data.each do |row|
       results.push({id: row['id'], user_id: row['user_id'], username: row['username'], company_id: row['company_id'], content: row['content'], url: row['url'], oko: row['oko'], attr: row['attr'], read_by: row['read_by'], sender_user_id: row['sender_user_id'], sender_username: row['sender_username'], created_at: row['created_at'], updated_at: row['updated_at']})
     end
-    render json: results
+    render json: {total_count: total_count, results: results}
   end
 
   def show

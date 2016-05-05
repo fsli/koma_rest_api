@@ -1,4 +1,4 @@
-class Api::V1::KomasController < ApplicationController
+class Api::V2::KomasController < ApplicationController
   skip_before_filter  :verify_authenticity_token
       def index
         koma_id = params[:id]

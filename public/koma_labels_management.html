@@ -9,7 +9,7 @@
 			function loadKomaLabels() {
 				$('.data-row').remove();
 				$.ajax({
-				    url: '/api/v1/koma_labels',
+				    url: '/api/v2/koma_labels',
 				    type: 'GET',
 				    success: function(response) {
 				        if (response && response.length > 0) {
@@ -41,7 +41,7 @@
 				var labelOrder = $('#txtLabelOrder').val();
 				var labelText = $('#txtLabelText').val();
 				$.ajax({
-				    url: '/api/v1/koma_labels',
+				    url: '/api/v2/koma_labels',
 				    type: 'POST',
 				    data: {company_id: companyId
 				    		, label_order: labelOrder
@@ -67,7 +67,7 @@
 				var labelOrder = $('#txtLabelOrder'+id).val();
 				var labelText = $('#txtLabelText'+id).val();
 				$.ajax({
-				    url: '/api/v1/koma_labels/' + id,
+				    url: '/api/v2/koma_labels/' + id,
 				    type: 'PUT',
 				    data: {company_id: companyId
 				    		, label_order: labelOrder
@@ -91,7 +91,7 @@
 			function deleteKomaLabel(id) {
 				if (confirm('Do you want to delete Koma Label id: ' + id + '?')) {
 					$.ajax({
-					    url: '/api/v1/koma_labels/' + id,
+					    url: '/api/v2/koma_labels/' + id,
 					    type: 'DELETE',
 					    
 					    success: function(response) {
