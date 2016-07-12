@@ -1,0 +1,196 @@
+<html>
+	<head/>
+		<script type="text/javascript" src="/js/jquery-1.12.2.min.js"></script>
+		<script type="text/javascript" >
+			$(function() {
+				loadKomaUsers();
+			});	
+				
+			function loadKomaUsers() {
+				$('.data-row').remove();
+				$.ajax({
+				    url: '/api/admin/koma_users',
+				    type: 'GET',
+				    success: function(response) {
+				        if (response && response.length > 0) {
+				        	var html ="";
+				        	for (var i = 0 ; i < response.length ; i++) {
+				        		var row = response[i];
+				        		var id = row.id;
+				        		var username = row.username;
+				        		var attr = row.attr;
+				        		var company_id = row.company_id;
+				        		var nickname = row.nickname;
+				        		var picture_url = row.picture_url;
+				        		var facebook_id = row.facebook_id;
+				        		var badge_number = row.badge_number;
+				        		html += "<tr class='data-row'>";
+				        		html += "<td>" + row.id + "</td>";
+				        		html += "<td><input type='text' id='txtUsername" + id +"' value='" + username + "'></td>"
+				        		html += "<td><input type='password' id='txtPassword" + id +"' value=''></td>"
+				        		html += "<td><input type='text' id='txtAttr" + id +"' value='" + attr + "'></td>"
+				        		html += "<td><input type='text' id='txtCompanyId" + id +"' value='" + company_id + "'></td>"
+				        		html += "<td><input type='text' id='txtNickname" + id +"' value='" + nickname + "'></td>"
+				        		html += "<td><input type='text' id='txtPictureUrl" + id +"' value='" + picture_url + "'></td>"
+				        		html += "<td><input type='text' id='txtFacebookId" + id +"' value='" + facebook_id + "'></td>"
+				        		html += "<td><input type='text' id='txtBadgeNumber" + id +"' value='" + badge_number + "'></td>"
+				        		html += "<td>" + row.created_at + "</td>"
+				        		html += "<td>" + row.updated_at + "</td>"
+				        		html += "<td><input type='button' value='Save' onclick='saveKomaUser(" + row.id + ");'><input type='button' value='Delete' onclick='deleteKomaUser(" + row.id + ");'></td>"; 
+				        		html += "</tr>";
+				        		
+				        	}
+				        	$(html).insertAfter('.new-koma-user-row');
+				        }
+				    }
+				});
+			}
+			function addNewKomaUser() {
+				var username = $('#txtUsername').val();
+				var password = $('#txtPassword').val();
+				if (password == '') {
+					alert('Password is required!');
+					return;
+				}
+				var attr = $('#txtAttr').val();
+				var companyId = $('#txtCompanyId').val();
+				var nickname = $('#txtNickname').val();
+				var pictureUrl = $('#txtPictureUrl').val();
+				var facebookId = $('#txtFacebookId').val();
+				var badgeNumber = $('#txtBadgeNumber').val();
+				if (badgeNumber == '') {
+					alert('badge number is required!');
+					return;
+				}
+				$.ajax({
+				    url: '/api/admin/koma_users',
+				    type: 'POST',
+				    data: {username : username,
+				    		password : password,
+				    		attr : attr,
+				    		company_id : companyId,
+				    		nickname : nickname,
+				    		picture_url : pictureUrl,
+				    		facebook_id : facebookId,
+				    		badge_number : badgeNumber
+				    		} ,
+				    success: function(response) {
+				    	if (response && response.result == true) {
+				    		alert(response.message);
+				    		loadKomaUsers();
+				    		clearNewKomaUser();
+				    	} else {
+				    		alert(response.message);
+				    	}
+				    	
+				    	
+				        
+				    }
+				});
+			}
+			
+			function saveKomaUser(id) {
+				var username = $('#txtUsername'+id).val();
+				var password = $('#txtPassword'+id).val();
+				if (password == '') {
+					alert('Password is required!');
+					return;
+				}
+				var attr = $('#txtAttr'+id).val();
+				var companyId = $('#txtCompanyId'+id).val();
+				var nickname = $('#txtNickname'+id).val();
+				var pictureUrl = $('#txtPictureUrl'+id).val();
+				var facebookId = $('#txtFacebookId'+id).val();
+				var badgeNumber = $('#txtBadgeNumber'+id).val();
+				var badgeNumber = $('#txtBadgeNumber').val();
+				if (badgeNumber == '') {
+					alert('badge number is required!');
+					return;
+				}
+				$.ajax({
+				    url: '/api/admin/koma_users/' + id,
+				    type: 'PUT',
+				    data: {username : username,
+				    		password : password,
+				    		attr : attr,
+				    		company_id : companyId,
+				    		nickname : nickname,
+				    		picture_url : pictureUrl,
+				    		facebook_id : facebookId,
+				    		badge_number : badgeNumber
+				    		} ,
+				    success: function(response) {
+				    	if (response && response.result == true) {
+				    		alert(response.message);
+				    		loadKomaUsers();
+				    	} else {
+				    		alert(response.message);
+				    	}
+				    	
+				    	
+				        
+				    }
+				});
+				
+			}
+			
+			function deleteKomaUser(id) {
+				if (confirm('Do you want to delete Koma User id: ' + id + '?')) {
+					$.ajax({
+					    url: '/api/admin/koma_users/' + id,
+					    type: 'DELETE',
+					    success: function(response) {
+					    	if (response && response.result == true) {
+					    		alert(response.message);
+					    		loadKomaUsers();
+					    	} else {
+					    		alert(response.message);
+					    	}
+					    }
+					});
+				} 
+			}
+			
+			function clearNewKomaUser() {
+				$('#txtUsername').val("");
+				$('#txtPassword').val("******");
+				$('#txtAttr').val("");
+				$('#txtCompanyId').val("");
+				$('#txtNickname').val("");
+				$('#txtPictureUrl').val("");
+				$('#txtFacebookId').val("");
+				$('#txtBadgeNumber').val("");
+			}
+		</script>
+	</head>
+	<body>
+		<h3>Koma Users Management</h3>
+		<table border='1' cellspacing='0' cellpadding='3'>
+			<tr class='koma-users-header'>
+				<th>id</th>
+				<th>username</th>
+				<th>password</th>
+				<th>attr</th>
+				<th>company_id</th>
+				<th>nickname</th>
+				<th>picture_url</th>
+				<th>facebook_id</th>
+				<th>badge_number</th>
+				<th>created_at</th>
+				<th>updated_at</th>
+			</tr>
+			<tr class="new-koma-user-row">
+				<td>N/A</td>
+				<td><input id="txtUsername" type="text"></td>
+				<td><input id="txtPassword" type="password"></td>
+				<td><input id="txtAttr" size='3' type="text"></td>
+				<td><input id="txtCompanyId" type="text" size='3'></td>
+				<td><input id="txtNickname" type="text"></td>
+				<td><input id="txtPictureUrl" type="text"></td>
+				<td><input id="txtFacebookId" type="text"></td>
+				<td><input id="txtBadgeNumber" type="text" size='3'></td>
+				<td colspan="2"><input type="button" id='btnAdd' value="Create New User" onclick='addNewKomaUser()'></td>
+			</tr>
+		</table>
+	</body>
+</html>

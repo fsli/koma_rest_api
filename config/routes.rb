@@ -43,6 +43,8 @@ Rails.application.routes.draw do
     end
     
   end
+  
+  get 'admin/koma_users_management.html', to: 'admin/koma_users_management#show'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

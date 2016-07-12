@@ -24,6 +24,7 @@ class Api::Admin::KomaUsersController < ApplicationController
   
     def create
       param_username = params[:username]
+      param_password = params[:password]
       param_attr = params[:attr]
       param_company_id = params[:company_id]
       param_nickname = params[:nickname]
@@ -32,16 +33,18 @@ class Api::Admin::KomaUsersController < ApplicationController
       param_badge_number = params[:badge_number]
       ret = validate_koma_user_create
       if ret[:result]      
-        ret = create_user(param_username, param_attr, param_company_id, param_nickname, param_picture_url, param_facebook_id, param_badge_number)
+        salt = BCrypt::Engine.generate_salt
+        encrypted_password = BCrypt::Engine.hash_secret(param_password, salt)
+        ret = create_user(param_username, param_attr, param_company_id, param_nickname, param_picture_url, param_facebook_id, param_badge_number, encrypted_password, salt)
         render json: ret
       else
         render json: ret
       end
     end
   
-    private def create_user(username, attribute, company_id, nickname, picture_url, facebook_id, badge_number) 
+    private def create_user(username, attribute, company_id, nickname, picture_url, facebook_id, badge_number, encrypted_password, salt) 
       
-      user = KomaUser.create(username: username, attr: attribute, company_id: company_id, nickname: nickname, picture_url: picture_url, facebook_id: facebook_id, badge_number: badge_number.nil? ? 0 : badge_number)
+      user = KomaUser.create(username: username, attr: attribute, company_id: company_id, nickname: nickname, picture_url: picture_url, facebook_id: facebook_id, badge_number: badge_number.nil? ? 0 : badge_number, password: encrypted_password, salt: salt)
       ret =  {result: true, id: user['id'], username: user['username'],  attr: user['attr'], company_id: user['company_id'], nickname: user['nickname'], picture_url: user['picture_url'], facebook_id:user['facebook_id'], badge_number: user['badge_number'], message: "User has been created successfully." }
       return ret
     end
@@ -53,6 +56,7 @@ class Api::Admin::KomaUsersController < ApplicationController
       end
       param_id = params[:id]
       param_username = params[:username]
+      param_password = params[:password]
       param_attr = params[:attr]
       param_company_id = params[:company_id]
       param_nickname = params[:nickname]
@@ -66,7 +70,12 @@ class Api::Admin::KomaUsersController < ApplicationController
           render json: {result: false, message: "User id: #{param_id} cannot be found."}   
           return
         end
-        ret = update_user(user, partial_update, param_username, param_attr, param_company_id, param_nickname, param_picture_url, param_facebook_id, param_badge_number)
+      
+        salt = user['salt']
+        encrypted_password = BCrypt::Engine.hash_secret(param_password, salt)
+        puts salt
+        puts encrypted_password
+        ret = update_user(user, partial_update, param_username, encrypted_password, param_attr, param_company_id, param_nickname, param_picture_url, param_facebook_id, param_badge_number)
 
         render json: ret
       else
@@ -74,10 +83,13 @@ class Api::Admin::KomaUsersController < ApplicationController
       end
     end
   
-    private def update_user(user, is_partial_update, username, attribute, company_id, nickname, picture_url, facebook_id, badge_number)
+    private def update_user(user, is_partial_update, username, encrypted_password, attribute, company_id, nickname, picture_url, facebook_id, badge_number)
       if is_partial_update
         if username.nil? == false
           user.update(username: username)
+        end
+        if encrypted_password.nil? == false
+          user.update(password: encrypted_password)
         end
         if attribute.nil? == false
           user.update(attr: attribute)          
@@ -99,7 +111,7 @@ class Api::Admin::KomaUsersController < ApplicationController
           user.update(badge_number: badge_number)
         end
       else
-        user.update(username: username, attr: attribute, company_id: company_id, nickname: nickname, picture_url: picture_url, facebook_id: facebook_id, badge_number: badge_number.nil? ? 0 : badge_number)
+        user.update(username: username, password: encrypted_password, attr: attribute, company_id: company_id, nickname: nickname, picture_url: picture_url, facebook_id: facebook_id, badge_number: badge_number.nil? ? 0 : badge_number)
       end
       
       ret =  {result: true, id: user['id'], username: user['username'],  attr: user['attr'], company_id: user['company_id'], nickname: user['nickname'], picture_url: user['picture_url'], facebook_id:user['facebook_id'], badge_number: user['badge_number'], message: "User has been updated successfully." }
@@ -115,7 +127,7 @@ class Api::Admin::KomaUsersController < ApplicationController
       end 
       user.destroy()
 
-      render json: {restul: true, id: user['id'], message: "User has been deleted successfully." }    
+      render json: {result: true, id: user['id'], message: "User has been deleted successfully." }    
     end
   
     private def validate_koma_user_create
